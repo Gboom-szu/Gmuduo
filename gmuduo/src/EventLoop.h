@@ -16,12 +16,12 @@ namespace gmuduo{
         std::unique_ptr<Epoll> poller_;
         std::vector<Channel*> activeChannels_;      // 可操作的channel列表
 
-        bool isInLoopThread();
+        bool isInLoopThread() const;
     public:
         EventLoop();
         ~EventLoop();
         void loop();    // 开始poll
-        void assertInLoopThread();
+        void assertInLoopThread() const;
         void updateChannel(Channel*);   // 更新Channel监听状态
     };
     

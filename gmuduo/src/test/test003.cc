@@ -1,5 +1,6 @@
 #include <gmuduo/src/EventLoop.h>
 #include <gmuduo/src/Channel.h>
+#include <gmuduo/com/Timestamp.h>
 #include <iostream>
 #include <unistd.h>
 #include <future>
@@ -17,7 +18,7 @@ int main() {
     gmuduo::EventLoop eventLoop;
     auto channel = new gmuduo::Channel(&eventLoop, fd[0]);
     channel->enableRead();
-    channel->setReadCallback([](uint64_t time) {
+    channel->setReadCallback([](gmuduo::Timestamp time) {
         char ch[20];
         read(fd[0], ch, 19);
         ch[19] = '\0';

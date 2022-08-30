@@ -3,6 +3,7 @@
 #include "Log.h"
 #include "EventLoop.h"
 
+
 namespace gmuduo{
     // 定义事件
     const uint32_t Channel::kNoneEvent = 0;
@@ -16,7 +17,7 @@ namespace gmuduo{
     void Channel::disableAll() {events_ = kNoneEvent;}
     void Channel::update() {eventloop_->updateChannel(this);}
 
-    void Channel::handleEvent(uint64_t receiveTime) {
+    void Channel::handleEvent(Timestamp receiveTime) {
         if(revents_ & kReadEvent) {
             LOG_INFO("读事件");
             readcallback_(receiveTime);

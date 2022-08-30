@@ -52,9 +52,9 @@ namespace gmuduo{
         }
     }
 
-    uint64_t Epoll::poll(int timeout, std::vector<Channel*>& activeChannels) {
+    Timestamp Epoll::poll(int timeout, std::vector<Channel*>& activeChannels) {
         int num = epoll_wait(epollFd_, &(*activeEvents_.begin()), activeEvents_.capacity(), timeout);
-        uint64_t now = 1;   // todo: 获取时间(ms)
+        Timestamp now;  // 获取当前时间
 
         if(num < 0) {
             LOG_FATAL("epoll_wait failed");

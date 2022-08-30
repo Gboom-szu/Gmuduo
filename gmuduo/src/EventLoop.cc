@@ -1,6 +1,7 @@
 #include <iostream>
 #include <poll.h>
 #include <assert.h>
+#include <gmuduo/com/Timestamp.h>
 #include "EventLoop.h"
 #include "Epoll.h"
 #include "Channel.h"
@@ -37,7 +38,7 @@ namespace gmuduo{
             break;
         }
     }
-    void EventLoop::assertInLoopThread() {
+    void EventLoop::assertInLoopThread() const {
         assert(t_eventLoop == this);
         // if(!isInLoopThread()) {
         //     std::cout << "not in loop thread" << std::endl;
@@ -45,7 +46,7 @@ namespace gmuduo{
         // }
     }
     
-    bool EventLoop::isInLoopThread() {
+    bool EventLoop::isInLoopThread() const {
         return t_eventLoop == this;
     }
     void EventLoop::updateChannel(Channel * channel) { poller_->updateChannel(channel); }

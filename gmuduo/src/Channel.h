@@ -2,14 +2,15 @@
 #define GMUDUO_SRC_CHANNEL_H
 
 #include <functional>
-#include <gmuduo/com/type.h>
 #include <sys/epoll.h>
+#include <gmuduo/com/Timestamp.h>
 
 namespace gmuduo{
     class EventLoop;
+    class Timestamp;
     class Channel{
         using Eventcallback = std::function<void()>;    // 非读事件回调函数
-        using Readcallback  = std::function<void(uint64_t)>;  // 读事件回调函数
+        using Readcallback  = std::function<void(Timestamp)>;  // 读事件回调函数
 
     private:
         EventLoop* eventloop_; // eventloop对象指针
@@ -58,7 +59,7 @@ namespace gmuduo{
         int fd()  {return fd_;}
         bool hasNoEvent() {return events_ == kNoneEvent;}
 
-        void handleEvent(uint64_t receiveTime);
+        void handleEvent(Timestamp receiveTime);
     };
 
 }

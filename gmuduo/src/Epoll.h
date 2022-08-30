@@ -4,6 +4,7 @@
 #include <sys/epoll.h>
 #include <vector>
 #include <unordered_map>
+#include <gmuduo/com/Timestamp.h>
 #include "Log.h"
 
 namespace gmuduo{
@@ -27,7 +28,7 @@ namespace gmuduo{
         void updateChannel(Channel* channel);
         // void removeChannel(Channel* channel);
 
-        uint64_t poll(int timeout, std::vector<Channel*>& activeChannels);      // 返回poll结束的时间
+        Timestamp poll(int timeout, std::vector<Channel*>& activeChannels);      // 返回poll结束的时间
     };
 }
 
