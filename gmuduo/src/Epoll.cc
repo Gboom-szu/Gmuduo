@@ -17,18 +17,15 @@ namespace gmuduo{
                 channelMap_[fd] = channel;
             }
             if(!channel->hasNoEvent()) {
-                LOG_INFO("EPOLL_CTL_ADD");
                 update(EPOLL_CTL_ADD, channel);
                 channel->setIndx(kListening);
             }
         } else {
             if(channel->hasNoEvent()) {
-                LOG_INFO("EPOLL_CTL_DEL");
                 update(EPOLL_CTL_DEL, channel);
                 channel->setIndx(kNotListening);
             } else
             {
-                LOG_INFO("EPOLL_CTL_MOD");
                 update(EPOLL_CTL_MOD, channel);                
             }
         }
@@ -39,8 +36,7 @@ namespace gmuduo{
         event.events = channel->getEvent();
         event.data.ptr = static_cast<void *>(channel);
         if(epoll_ctl(epollFd_, operation, channel->fd(), &event) < 0) {
-            LOG_INFO(strerror(errno));
-            LOG_FATAL("failed to epoll_ctl");
+            LOG_FATAL(std::string(strerror(errno)) + "failed to epoll_ctl");
         }
     }
 

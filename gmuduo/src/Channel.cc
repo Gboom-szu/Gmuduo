@@ -19,15 +19,12 @@ namespace gmuduo{
 
     void Channel::handleEvent(Timestamp receiveTime) {
         if(revents_ & kReadEvent) {
-            LOG_INFO("读事件");
             readcallback_(receiveTime);
         }
         if(revents_ & kWriteEvent) {
-            LOG_INFO("写事件");
             writecallback_();
         }
         if(revents_ & EPOLLRDHUP) {
-            LOG_INFO("连接关闭");
             closecallback_();
         }
     }

@@ -4,6 +4,6 @@
 
 
 namespace gmuduo{
-    #define LOG_INFO(message) {std::cout << (message) << std::endl;}
-    #define LOG_FATAL(message) {std::cout << (message) << std::endl; exit(-1);}
+    #define LOG_INFO(message) {std::cout << "LOG_INFO: " << (message) << std::endl;}
+    #define LOG_FATAL(message) {std::cout << "LOG_FATAL: " << (message) << std::endl; exit(-1);}
 }

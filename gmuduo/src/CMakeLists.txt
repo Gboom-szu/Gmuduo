@@ -2,6 +2,7 @@ set(SRCS
     EventLoop.cc
     Channel.cc
     Epoll.cc
+    TimerQueue.cc
 )
 
 add_library(gmuduo ${SRCS})

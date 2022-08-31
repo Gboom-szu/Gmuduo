@@ -9,3 +9,6 @@ target_link_libraries(test003 gmuduo pthread)
 
 add_executable(test004 test004.cc)
 target_link_libraries(test004 gmuduo pthread)
+
+add_executable(test005 test005.cc)
+target_link_libraries(test005 gmuduo pthread)

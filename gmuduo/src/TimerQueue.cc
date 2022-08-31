@@ -19,7 +19,6 @@ namespace gmuduo
 
     static timespec timeFromNow(const Timestamp& when) {
         auto microseconds = when.microSecondsSinceEpoch() - Timestamp().microSecondsSinceEpoch(); 
-        LOG_INFO(std::to_string(microseconds));
         if(microseconds < 100)
             microseconds = 100;
         timespec res;
@@ -41,10 +40,12 @@ namespace gmuduo
     // 新建一个timer，在必要时要重新设置timerfd到期时间
     TimerID TimerQueue::addTimer(std::function<void(void)> callback, Timestamp when, uint64_t interval) {
         auto timer_ptr = std::make_shared<Timer>(callback, when, interval);
-        if(timerSet_.empty() || timerSet_.begin()->first > when) {
-            resetTimerfd(when);
-        }
-        timerSet_.insert(Entry(timer_ptr->expired(), timer_ptr));
+        eventLoop_->runInLoop([this, timer_ptr](){
+            if(timerSet_.empty() || timerSet_.begin()->first > timer_ptr->expired()) {
+                resetTimerfd(timer_ptr->expired());
+            }
+            timerSet_.insert(Entry(timer_ptr->expired(), timer_ptr));
+        });
         return {timer_ptr};
     }
 
@@ -70,7 +71,6 @@ namespace gmuduo
     }
 
     void TimerQueue::handleRead(Timestamp time) {
-        LOG_INFO("TimerQueue::handleRead");
         uint64_t temp;
         read(timerfd_, &temp, sizeof temp);
         auto expired = getExpired(time);
