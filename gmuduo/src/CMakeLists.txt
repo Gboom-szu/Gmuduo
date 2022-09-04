@@ -3,6 +3,7 @@ set(SRCS
     Channel.cc
     Epoll.cc
     TimerQueue.cc
+    InetAddr.cc
 )
 
 add_library(gmuduo ${SRCS})
