@@ -6,7 +6,7 @@
 #include <mutex>
 #include <functional>
 #include <atomic>
-#include <gmuduo/com/Timestamp.h>
+#include "Timestamp.h"
 #include "TimerID.h"
 
 
@@ -34,7 +34,6 @@ namespace gmuduo{
         std::vector<Functor> penddingTask_;         // 转移到io线程上执行的任务，会在poll之后执行
         std::atomic_bool callpending_{false};       // 是否正在处理penddingTask_。
 
-        void assertInLoopThread() const;
         void doPendingTask();                       // 执行queuInLoop提交的任务
         void wakeup();
         void handleEfdRead(Timestamp);
@@ -42,9 +41,12 @@ namespace gmuduo{
         EventLoop();
         ~EventLoop();
         void loop();    // 开始poll
+        void assertInLoopThread() const;
         bool isInLoopThread() const;
         
         void updateChannel(Channel*);   // 更新Channel监听状态
+        void removeChannel(Channel*);
+
         void setPollTime(int timeout) {pollTimeMS_ = timeout;}
         void quit();        // 结束loop
 

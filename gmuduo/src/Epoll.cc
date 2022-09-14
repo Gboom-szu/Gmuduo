@@ -36,7 +36,7 @@ namespace gmuduo{
         event.events = channel->getEvent();
         event.data.ptr = static_cast<void *>(channel);
         if(epoll_ctl(epollFd_, operation, channel->fd(), &event) < 0) {
-            LOG_FATAL(std::string(strerror(errno)) + "failed to epoll_ctl");
+            LOG_ERROR(std::string(strerror(errno)) + "failed to epoll_ctl");
         }
     }
 
@@ -48,12 +48,19 @@ namespace gmuduo{
         }
     }
 
+    void Epoll::removeChannel(Channel *channel) {
+        if(channel->indx() == kListening) {
+            channel->disableAll();
+        }
+        channelMap_.erase(channel->fd());
+    }
+
     Timestamp Epoll::poll(int timeout, std::vector<Channel*>& activeChannels) {
         int num = epoll_wait(epollFd_, &(*activeEvents_.begin()), activeEvents_.capacity(), timeout);
         Timestamp now;  // 获取当前时间
 
         if(num < 0) {
-            LOG_FATAL("epoll_wait failed");
+            LOG_ERROR("epoll_wait failed");
         }
         if(num) {
             fillActiveChannels(num, activeChannels);

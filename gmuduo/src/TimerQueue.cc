@@ -12,7 +12,7 @@ namespace gmuduo
     static int createTimerfd() {
         int res = timerfd_create(CLOCK_MONOTONIC, TFD_CLOEXEC|TFD_NONBLOCK);
         if(res < 0) {
-            LOG_FATAL("timerfd_create failed");
+            LOG_ERROR("timerfd_create failed");
         }
         return res;
     }
@@ -34,7 +34,7 @@ namespace gmuduo
             isHandling(false)
     {
         timerChannel_.setReadCallback(std::bind(&TimerQueue::handleRead, this, std::placeholders::_1));
-        timerChannel_.enableRead();   // timer应该一直的监听读事件     
+        // timerChannel_.enableRead();   // timer应该一直的监听读事件。因为eventloop是通过线程局部变量判断是否在同一个线程，所有展示不能enable    
     }
 
     // 新建一个timer，在必要时要重新设置timerfd到期时间
@@ -56,7 +56,7 @@ namespace gmuduo
         memset(&newValue, 0, sizeof(itimerspec));
         newValue.it_value = timeFromNow(when);
         if(timerfd_settime(timerfd_, 0, &newValue, nullptr) < 0 ) {     // 这里使用相对时间，可以控制timer到期间隔，免得太快到期。
-            LOG_FATAL("resetTimerfd failed");
+            LOG_ERROR("resetTimerfd failed");
         }
     }
     
@@ -109,4 +109,6 @@ namespace gmuduo
             resetTimerfd(timerSet_.begin()->first);
         }
     }
+
+    void TimerQueue::enable(){timerChannel_.enableRead();}
 } // namespace gmuduo

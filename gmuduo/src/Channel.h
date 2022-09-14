@@ -3,12 +3,12 @@
 
 #include <functional>
 #include <sys/epoll.h>
-#include <gmuduo/com/Timestamp.h>
+#include "Timestamp.h"
 
 namespace gmuduo{
     class EventLoop;
     class Timestamp;
-    class Channel{
+    class Channel{      // Channel所有接口都只能在loop线程中调用
         using Eventcallback = std::function<void()>;    // 非读事件回调函数
         using Readcallback  = std::function<void(Timestamp)>;  // 读事件回调函数
 
@@ -51,6 +51,7 @@ namespace gmuduo{
         void disableWrite();
         void disableAll();
         void update();  // 更新监听状态
+        void remove();
         int indx(){return indx_;}
         void setIndx(int indx) {indx_ = indx;}
         uint32_t getEvent() {return events_;}

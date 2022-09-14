@@ -2,7 +2,7 @@
 #define GMUDUO_SRC_TIMER_H
 
 #include <functional>
-#include <gmuduo/com/Timestamp.h>
+#include "Timestamp.h"
 
 namespace gmuduo
 {

@@ -2,7 +2,7 @@
 #include <poll.h>
 #include <assert.h>
 #include <atomic>
-#include <gmuduo/com/Timestamp.h>
+#include "Timestamp.h"
 #include "EventLoop.h"
 #include "Epoll.h"
 #include "Channel.h"
@@ -20,7 +20,7 @@ namespace gmuduo{
     static int createEventfd() {
         int fd = eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
         if(fd < 0) {
-            LOG_FATAL("createEventfd failed");
+            LOG_ERROR("createEventfd failed");
         }
         return fd;
     }
@@ -34,9 +34,9 @@ namespace gmuduo{
         if(t_eventLoop == nullptr) {
             t_eventLoop = this;
         } else {
-            LOG_FATAL("当前线程已经创建了一个eventloop");
+            LOG_ERROR("当前线程已经创建了一个eventloop");
         }
-        
+        timerQueue_->enable();
         wakeupChannel_->setReadCallback(std::bind(&EventLoop::handleEfdRead, this, std::placeholders::_1));
         wakeupChannel_->enableRead();
     }
@@ -60,17 +60,23 @@ namespace gmuduo{
         }
     }
     void EventLoop::assertInLoopThread() const {
-        assert(t_eventLoop == this);
-        // if(!isInLoopThread()) {
-        //     std::cout << "not in loop thread" << std::endl;
-        //     exit(-1);
-        // }
+        // assert(t_eventLoop == this);
+        if(!isInLoopThread()) {
+            LOG_ERROR("not in loop thread");
+        }
     }
     
     bool EventLoop::isInLoopThread() const {
         return t_eventLoop == this;
     }
-    void EventLoop::updateChannel(Channel * channel) { poller_->updateChannel(channel); }
+    void EventLoop::updateChannel(Channel * channel) { 
+        assertInLoopThread();
+        poller_->updateChannel(channel); 
+    }
+    void EventLoop::removeChannel(Channel* channel) {
+        assertInLoopThread();
+        poller_->removeChannel(channel);
+    }
 
         // 定时器
     TimerID EventLoop::runAt(const Timestamp& when, Functor calllbackk) {  // 在固定(无保证)时间执行
@@ -101,7 +107,7 @@ namespace gmuduo{
         ssize_t n = read(efd, &one, sizeof one);
         if (n != sizeof one)
         {
-            LOG_FATAL("handleEfdRead failed");
+            LOG_ERROR("handleEfdRead failed");
         }        
     }
 
@@ -110,7 +116,7 @@ namespace gmuduo{
         auto n = write(efd, &one, sizeof one);
         if (n != sizeof one)
         {
-            LOG_FATAL("wakeup failed");
+            LOG_ERROR("wakeup failed");
         }
     }
 

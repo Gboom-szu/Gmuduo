@@ -4,7 +4,7 @@
 #include <sys/epoll.h>
 #include <vector>
 #include <unordered_map>
-#include <gmuduo/com/Timestamp.h>
+#include "Timestamp.h"
 #include "Log.h"
 
 namespace gmuduo{
@@ -22,11 +22,11 @@ namespace gmuduo{
         Epoll(): activeEvents_(KInitSize) {
             epollFd_ = epoll_create1(EPOLL_CLOEXEC);
             if(epollFd_ < 0 ) {
-                LOG_FATAL("cannot create epoll");
+                LOG_ERROR("cannot create epoll");
             }
         }
         void updateChannel(Channel* channel);
-        // void removeChannel(Channel* channel);
+        void removeChannel(Channel* channel);
 
         Timestamp poll(int timeout, std::vector<Channel*>& activeChannels);      // 返回poll结束的时间
     };

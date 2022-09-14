@@ -14,18 +14,28 @@ namespace gmuduo{
     void Channel::disableRead() {events_ &= ~kReadEvent; update();}
     void Channel::enableWrite() {events_ |= kWriteEvent; update();}
     void Channel::disableWrite() {events_ &= ~kWriteEvent; update();}
-    void Channel::disableAll() {events_ = kNoneEvent;}
+    void Channel::disableAll() {events_ = kNoneEvent; update();}
     void Channel::update() {eventloop_->updateChannel(this);}
-
+    void Channel::remove(){
+        eventloop_->removeChannel(this);
+    }
     void Channel::handleEvent(Timestamp receiveTime) {
-        if(revents_ & kReadEvent) {
-            readcallback_(receiveTime);
+        // ref : https://blog.csdn.net/halfclear/article/details/78061771
+        if(revents_ & EPOLLERR) {
+            if(errorcallback_) errorcallback_();
         }
-        if(revents_ & kWriteEvent) {
-            writecallback_();
+
+        if(revents_ & EPOLLIN) {
+            if(readcallback_) readcallback_(receiveTime);
         }
-        if(revents_ & EPOLLRDHUP) {
-            closecallback_();
+
+        if(revents_ & EPOLLHUP) {  // 对端关闭了读写，本端继续发数据而收到RST。这时候就不应该再发数据了。 EPOLLIN+EPOLLRDHUP+EPOLLHUP+EPOLLERR
+            if(closecallback_) closecallback_();
+        } 
+
+        if(revents_ & EPOLLOUT) {
+            if(writecallback_) writecallback_();
         }
+
     }
 }

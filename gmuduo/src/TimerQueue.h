@@ -5,7 +5,7 @@
 #include <set>
 #include <memory>
 #include <vector>
-#include <gmuduo/com/Timestamp.h>
+#include "Timestamp.h"
 #include "Channel.h"
 #include "Timer.h"
 #include "TimerID.h"
@@ -38,7 +38,7 @@ namespace gmuduo
         std::vector<Entry> getExpired(const Timestamp& time);   // 清除并返回到期的timer
         void handleRead(Timestamp time);    // timerfd到期时，处理timer
         void reset(const std::vector<Entry>& expired);      // 将周期timer重新加回去，并重新设置timerfd
-
+        void enable();
         friend class EventLoop;     // 只能通过EventLoop访问TimerQueue
     };
     
